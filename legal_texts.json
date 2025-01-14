@@ -1,0 +1,67 @@
+[
+    {
+        "name": "Bürgerliches Gesetzbuch",
+        "abbreviation": "BGB",
+        "category": "Zivilrecht"
+    },
+    {
+        "name": "Einführungsgesetz zum Bürgerlichen Gesetzbuch",
+        "abbreviation": "EGBGB",
+        "category": "Zivilrecht"
+    },
+    {
+        "name": "Strafgesetzbuch",
+        "abbreviation": "StGB",
+        "category": "Strafrecht"
+    },
+    {
+        "name": "Handelsgesetzbuch",
+        "abbreviation": "HGB",
+        "category": "Handelsrecht"
+    },
+    {
+        "name": "Grundgesetz für die Bundesrepublik Deutschland",
+        "abbreviation": "GG",
+        "category": "Verfassungsrecht"
+    },
+    {
+        "name": "Bundesdatenschutzgesetz",
+        "abbreviation": "BDSG",
+        "category": "Datenschutzrecht"
+    },
+    {
+        "name": "Sozialgesetzbuch",
+        "abbreviation": "SGB",
+        "category": "Sozialrecht"
+    },
+    {
+        "name": "Zivilprozessordnung",
+        "abbreviation": "ZPO",
+        "category": "Verfahrensrecht"
+    },
+    {
+        "name": "Strafprozessordnung",
+        "abbreviation": "StPO",
+        "category": "Verfahrensrecht"
+    },
+    {
+        "name": "Urheberrechtsgesetz",
+        "abbreviation": "UrhG",
+        "category": "Urheberrecht"
+    },
+    {
+        "name": "Baugesetzbuch",
+        "abbreviation": "BauGB",
+        "category": "Baurecht"
+    },
+    {
+        "name": "Straßenverkehrsordnung",
+        "abbreviation": "StVO",
+        "category": "Verkehrsrecht"
+    },
+    {
+        "name": "Einkommensteuergesetz",
+        "abbreviation": "EStG",
+        "category": "Steuerrecht"
+    }
+]

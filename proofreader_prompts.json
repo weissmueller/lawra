@@ -1,0 +1,53 @@
+{
+    "Feedback zum Schreibstil CoT": {
+        "useprompt": false,
+        "prompts": [
+            {"prompt": "Beurteile, ob der folgende Satz den Anforderungen eines juristischen Textes entspricht. Insbesondere prüfst du, ob die Sprache neutral, formal und frei von Umgangssprache ist. Gib dein Urteil in einem einzigen prägnanten Satz ab. Da du die Sätze einzeln betrachtest, kann es sein, dass der Kontext oder eine Konkretisierung fehlt. Dies soll deine Bewertung nicht negativ beeinflussen. Hier ist der zu bewertende Satz: {sentence}", "display_answer": true},
+            {"prompt": "Basierend auf deinem vorherigen Feedback, gebe dem Satz eine Schulnote zwischen 1 und 6. Die beste Note ist 1, die schlechteste Note ist 6. Wenn du nichts zu beanstanden hast, gebe dem Satz die Note 1. Antworte im Format 'Note: X'. Ersetze X durch deine Bewertung.", "display_answer": true}
+        ],
+        "assistant_id": "asst_BxmYTkrU5zpGpjnB5aG18esR",
+        "sentence_based": true,
+        "assigntosentece": false
+    },
+    "Fehlende Paragraphen": {
+        "useprompt": false,
+        "prompts": [
+            {"prompt": "Was besagen die Paragraphen {missing_citations}?", "display_answer": false},
+            {"prompt": "Du bewertest ein Gutachten eines Studierenden, aber in seinem Gutachten fehlen die Paragraphen {missing_citations}. Gebe ihm einen Hinweis, welche Paragraphen fehlen, und wieso diese einschlägig sind. Nehme die Lösung nicht vorweg, aber gebe hilfreiche Hinweise. Hier ist das Gutachten des Studierenden: '{text}' ", "display_answer": true}
+        ],
+        "assistant_id": "asst_XVoNsVu5MXlvYUPiN9YPoNK7",
+        "sentence_based": false,
+        "assigntosentece": false
+    },
+    "Paragraphen": {
+        "useprompt": false,
+        "prompts": [
+            {"prompt": "Was besagen die Paragraphen {citations}?", "display_answer": false},
+            {"prompt": "Du bewertest ein Gutachten eines Studierenden, und er hat die eben genannten Paragraphen in seinem Gutachten erwähnt. Die Paragraphen {wrong_citations} gehören nicht in die korrekte Fallösung. Schreibe eine kurze Bewertung darüber, ob der/die Studierende den Inhalt der weiteren Paragraphen korrekt definiert und geprüft hat. Der Fall lautete: \"{case_description}\". Hier ist das Gutachten, welches es zu prüfen gilt: {text}", "display_answer": true}
+        ],
+        "assistant_id": "asst_XVoNsVu5MXlvYUPiN9YPoNK7",
+        "sentence_based": false,
+        "assigntosentece": false
+    },
+    "Beurteilung der Loesung": {
+        "useprompt": true,
+        "prompts": [
+            {"prompt": "Was besagen die Paragraphen {citations} und {missing_citations}?", "display_answer": false},
+            {"prompt": "Bewerte die Lösung des/der Studierenden im Hinblick auf die Arbeit mit den Paragraphen. Es geht um folgenden Fall: \"{case_description}\". Die perfekte Lösung für den Fall lautet: \"{case_solution}\". Die Lösung des/der Studierenden lautet: \"{text}\". Der/die Studierende hat folgende Paragraphen korrekterweise einbezogen: {correct_citations}. Folgende Paragraphen hat er/sie fälschlicherweise genannt: {wrong_citations}. Im/Ihr fehlen die Paragraphen {missing_citations}. Was hat der/die Studierende in Bezug auf die einbezogenen Paragraphen gut gemacht und was hätte er/sie besser machen können? Schreibe deine Nachricht direkt an den Studierenden.", "display_answer": true},
+            {"prompt": "Hat der/die Studierende die richtigen Schlussfolgerungen getroffen? Schreibe deine Nachricht direkt an den/die Studierende. Die perfekte Lösung für den Fall lautet: \"{case_solution}\". Die Lösung des/der Studierenden lautet: \"{text}\".", "display_answer": true},
+            {"prompt": "Der Gutachtenstil ist eine methodische Vorgehensweise, die es ermöglicht, juristische Sachverhalte klar, systematisch und nachvollziehbar zu prüfen. Diese Methode wird in juristischen Texten verwendet, um die Argumentation logisch zu strukturieren und Lesern einen stringenten Gedankengang zu präsentieren. Ein juristisches Gutachten gliedert sich in vier aufeinanderfolgende Schritte: Obersatz, Definition, Subsumtion und Ergebnis. Der Obersatz leitet die Prüfung ein, indem die rechtliche Frage formuliert wird, die es zu klären gilt. Dabei wird im Konjunktiv ausgedrückt, welcher Anspruch oder welche Rechtsfrage zu prüfen ist. Zum Beispiel: \"K könnte gegen V einen Anspruch auf Übergabe und Übereignung eines Fahrrads gemäß § 433 Abs. 1 Satz 1 BGB haben.\" Der Obersatz enthält die wesentlichen Elemente: die Beteiligten, den möglichen Anspruch und die einschlägige Norm. Im nächsten Schritt, der Definition, werden die im Obersatz genannten Normen und ihre Tatbestandsmerkmale präzise definiert. Dabei liegt der Fokus auf den rechtlichen Voraussetzungen, die für das Bestehen des Anspruchs erfüllt sein müssen. \"Nach § 433 Abs. 1 Satz 1 BGB verpflichtet sich der Verkäufer durch den Kaufvertrag, dem Käufer die Sache zu übergeben und das Eigentum daran zu verschaffen. Voraussetzung ist das Zustandekommen eines wirksamen Kaufvertrags. Zudem ist gemäß § 433 Abs. 2 BGB der Käufer verpflichtet, den vereinbarten Kaufpreis zu zahlen und die gekaufte Sache abzunehmen.\" Diese Regelungen definieren die beidseitigen Hauptpflichten eines Kaufvertrags. In der Subsumtion wird der Sachverhalt an die zuvor definierten Tatbestandsmerkmale angelegt. Dabei ist systematisch zu prüfen, ob der Sachverhalt die rechtlichen Voraussetzungen erfüllt. \"Ein wirksamer Kaufvertrag zwischen K und V liegt vor, da K und V sich gemäß §§ 145 ff. BGB über den Kauf eines Fahrrads und den Preis geeinigt haben. V hat jedoch das Fahrrad bisher nicht übergeben und übereignet, obwohl dies gemäß § 433 Abs. 1 Satz 1 BGB seine Pflicht wäre.\" Abschließend wird das Ergebnis formuliert. Es beantwortet die im Obersatz aufgeworfene Frage und wird klar und prägnant im Indikativ dargestellt. Im vorliegenden Beispiel lautet das Ergebnis: \"K hat gegen V einen Anspruch auf Übergabe und Übereignung des Fahrrads gemäß § 433 Abs. 1 Satz 1 BGB.\" Der Gutachtenstil stellt die Begründung vor das Ergebnis. Dadurch wird der Leser Schritt für Schritt durch die Argumentation geführt. Subjektive Meinungen werden vermieden, stattdessen basiert die Argumentation auf objektiven rechtlichen Maßstäben. Formulierungen im Konjunktiv sind essenziell, um die hypothetische Prüfung zu verdeutlichen. Dieses Vorgehen sichert eine gründliche und nachvollziehbare juristische Argumentation. Hat der/die Studierende den Gutachtenstil korrekt angewandt? Hier ist die Lösung des/der Studierenden: \"{text}\"", "display_answer": true}
+        ],
+        "assistant_id": "asst_XVoNsVu5MXlvYUPiN9YPoNK7",
+        "sentence_based": false,
+        "assigntosentece": false
+    },
+    "Feedback zum Schreibstil": {
+        "useprompt": true,
+        "prompts": [
+            {"prompt": "Beurteile, ob der folgende Satz den Anforderungen eines juristischen Textes entspricht. Prüfe ausschließlich den Sprachstil und die Wortwahl und bewerte, ob die Sprache neutral, formal und frei von Umgangssprache ist. Gib dein Urteil in einem einzigen prägnanten Satz ab. Basierend auf deinem vorherigen Feedback, gebe dem Satz eine Schulnote zwischen 1 und 6. Die beste Note ist 1, die schlechteste Note ist 6. Wenn du nichts zu beanstanden hast, gebe dem Satz die Note 1. Antworte im Format 'Note: X'. Ersetze X durch deine Bewertung. Hier ist der zu bewertende Satz: {sentence}", "display_answer": true}
+        ],
+        "assistant_id": "asst_BxmYTkrU5zpGpjnB5aG18esR",
+        "sentence_based": true,
+        "assigntosentece": false
+    }
+}
