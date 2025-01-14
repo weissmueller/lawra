@@ -1,4 +1,4 @@
-# Lawra - AI Feedback Tool for Legal Students
+# LaWrA - AI Writing Assistant for Law Students
 
 Lawra is a web application designed to provide AI-generated feedback to legal students on predefined cases. The application leverages OpenAI's API to analyze student submissions and generate detailed feedback on their legal writing and case analysis.
 
