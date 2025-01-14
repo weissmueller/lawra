@@ -1,67 +1,92 @@
-# LAIwyer - Rechtsfall Feedback Generator
+# Lawra - AI Feedback Tool for Legal Students
 
-LAIwyer is a web application that provides AI-generated feedback on legal case descriptions and student inputs. The application uses predefined prompts to analyze the input text and generate feedback based on various criteria such as legal correctness, formal language, and the type of legal statement.
-
-## Table of Contents
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [Testing](#testing)
-- [License](#license)
-- [Authors and Acknowledgments](#authors-and-acknowledgments)
-- [Contact Information](#contact-information)
+Lawra is a web application designed to provide AI-generated feedback to legal students on predefined cases. The application leverages OpenAI's API to analyze student submissions and generate detailed feedback on their legal writing and case analysis.
 
 ## Features
-- Analyze legal case descriptions and student inputs.
-- Generate feedback based on predefined prompts.
-- Display feedback in a user-friendly format.
-- Supports multiple AI providers (OpenAI, Ollama).
-- Includes conversation history for context-aware responses.
+
+- **AI-Generated Feedback**: Provides feedback on legal writing style, citation accuracy, and case analysis.
+- **Predefined Cases**: Students can select from a list of predefined cases to receive feedback on.
+- **Real-Time Updates**: Feedback is streamed to the client in real-time using Socket.IO.
+- **Cache System**: Caching mechanism to store and retrieve feedback responses.
 
 ## Installation
+
+### Prerequisites
+
+- Python 3.7+
+- pip (Python package installer)
+- Node.js and npm (for running the frontend)
+
+### Setup
+
 1. Clone the repository:
-    ```bash
-    git clone https://github.com/username/project.git
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd project
-    ```
-3. Create a virtual environment:
-    ```bash
-    python -m venv .venv
-    ```
-4. Activate the virtual environment:
-    - On Windows:
-        ```bash
-        .venv\Scripts\activate
-        ```
-    - On macOS/Linux:
-        ```bash
-        source .venv/bin/activate
-        ```
-5. Install the dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+
+   ```sh
+   git clone https://github.com/yourusername/lawra.git
+   cd lawra
+   ```
+
+2. Install the required Python packages:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. Set up environment variables:
+
+   - Create a `.env` file in the root directory.
+   - Add your OpenAI API key:
+     ```
+     OPENAI_API_KEY=your_openai_api_key
+     ```
+
+4. Install frontend dependencies:
+
+   ```sh
+   cd frontend
+   npm install
+   ```
+
+5. Build the frontend:
+
+   ```sh
+   npm run build
+   ```
 
 ## Usage
-1. Start the FastAPI server for LocalRag:
-    ```bash
-    uvicorn localragAPI:app --reload
-    ```
-2. Start the Flask application:
-    ```bash
-    python appAPI.py
-    ```
+
+1. Before starting, create a `cases.json` file in the root directory. This file should be a copy of `cases_template.json` but populated with actual legal cases.
+
+2. Start the backend server:
+
+   ```sh
+   python proofreader.py
+   ```
+
 3. Open your web browser and navigate to `http://127.0.0.1:5000`.
 
-## Contributing
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add new feature'`).
-5. Push to the branch (`git push origin feature-branch`).
-6. Open a pull request.
+## File Structure
+
+- `cases_template.json`: Template for defining cases.
+- `cases.json`: JSON file containing the actual legal cases created based on `cases_template.json`.
+- `legal_texts.json`: JSON file containing sample legal texts.
+- `proofreader.py`: Main backend application file.
+- `proofreader_prompts.json`: JSON file containing prompt configurations for generating feedback.
+- `requirements.txt`: List of Python dependencies.
+- `static/`: Directory containing static assets like icons and images.
+  - `icon1.png`
+  - `icon2.png`
+  - `loading.png`
+- `templates/`: Directory containing HTML templates.
+  - `index.html`
+- `readme.md`: Documentation file.
+
+## Configuration
+
+### Prompts
+
+The `proofreader_prompts.json` file contains the configurations for different types of feedback prompts. Each prompt group can be enabled or disabled using the `useprompt` field.
+
+### Cases
+
+The `cases_template.json` file serves as a template for defining cases. Each case includes an ID, title, description, solution, and difficulty level.
