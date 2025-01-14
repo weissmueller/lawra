@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaWrA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0px;
+            background-color: #F4F4ED; /* Change background color */
+        }
+        .header {
+            background-color: #5E239D;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            padding-left: 30px; /* Move the title slightly to the right */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .fields-container {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            margin-top: 20px;
+        }
+        .text-section {
+            width: 45%;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-family: monospace; /* Use monospace for alignment */
+            resize: none;
+            margin-top: 5px;
+            white-space: pre-wrap; /* Preserve formatting */
+            border-radius: 5px; /* Round the corners */
+        }
+        .feedback-section {
+            width: 100%;
+        }
+        .sentence-feedback-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .feedback-box {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 0; /* No border */
+            background-color: #fcfcfb;
+            border-radius: 5px;
+        }
+        .sentence {
+            font-weight: bold;
+            width: 45%;
+        }
+        .feedbacks {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+        .feedback {
+            margin-bottom: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #cebde1;
+        }
+        .user-question {
+            margin-bottom: 5px;
+            padding: 10px;
+            border: 0; /* No border */
+            border-radius: 5px;
+            background-color: #ded3eb;
+        }
+        .follow-up-response {
+            margin-bottom: 5px;
+            padding: 10px;
+            border: 0;
+            border-radius: 5px;
+            background-color: #cebde1;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #loading img {
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        .loading img {
+            width: 25px;
+            height: 25px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .overall-feedback-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .overall-feedback {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 0;
+            border-radius: 5px;
+            background-color: #fcfcfb;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 0.75em;
+        }
+        h3 {
+            font-size: 1.17em;
+            margin-bottom: 1em;
+        }
+        .follow-up-container {
+            display: none;
+            flex-direction: column;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .follow-up-container input {
+            padding: 5px;
+            font-size: 14px;
+            margin-bottom: 5px;
+            width: calc(100% - 20px); /* Adjust width to match follow-up response box */
+        }
+        .follow-up-container button,
+        .ask-button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px; /* Add margin-top to match the "Nachfragen" button */
+            align-self: center; /* Center the button horizontally */
+        }
+        .purple_button {
+            /*box-shadow: 0px 7px 21px 0px #5e239d;*/
+            border: 0;
+            background-color: #5e239d;
+            border-radius: 42px;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: Arial;
+            font-size: 17px;
+            padding: 16px 31px;
+            text-decoration: none;
+            
+        }
+        .purple_button:hover {
+            background-color: #6e38a6;
+        }
+        .purple_button:active {
+            position: relative;
+            top: 1px;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const socket = io();
+            const caseDropdown = document.getElementById("case_dropdown");
+            const caseDescription = document.getElementById("case_description");
+            const loadingElement = document.getElementById("loading"); // Add this line
+
+            socket.on('feedback_update', (data) => {
+                const feedbackContainer = document.getElementById("feedback_output");
+
+                // Check if the sentence already exists
+                let sentenceDiv = document.querySelector(`.sentence[data-sentence="${data.sentence}"]`);
+                let feedbacksDiv;
+
+                if (!sentenceDiv) {
+                    // Create new sentence and feedback containers
+                    const container = document.createElement("div");
+                    container.className = "feedback-box";
+
+                    sentenceDiv = document.createElement("div");
+                    sentenceDiv.className = "sentence";
+                    sentenceDiv.setAttribute("data-sentence", data.sentence);
+                    sentenceDiv.setAttribute("data-thread-id", data.thread_id); // Add thread_id attribute
+                    sentenceDiv.textContent = data.sentence; // Original sentence
+
+                    feedbacksDiv = document.createElement("div");
+                    feedbacksDiv.className = "feedbacks";
+
+                    container.appendChild(sentenceDiv);
+                    container.appendChild(feedbacksDiv);
+
+                    feedbackContainer.appendChild(container);
+                } else {
+                    // Get the existing feedbacks container
+                    feedbacksDiv = sentenceDiv.nextElementSibling;
+                }
+
+                // Append new feedback to the feedbacks container
+                const feedbackDiv = document.createElement("div");
+                feedbackDiv.className = "feedback";
+                feedbackDiv.innerHTML = `<strong>${data.prompt}:</strong> <br> ${data.response}`; // Feedback for the sentence
+                feedbacksDiv.appendChild(feedbackDiv);
+
+                // Create follow-up container and button
+                const followUpContainer = document.createElement("div");
+                followUpContainer.className = "follow-up-container";
+
+                const followUpInput = document.createElement("input");
+                followUpInput.type = "text";
+                followUpInput.placeholder = "Stelle eine Rückfrage";
+
+                const followUpButton = document.createElement("button");
+                followUpButton.textContent = "Senden";
+                followUpButton.classList.add("purple_button"); // Use the same class as "Nachfragen" button
+                followUpButton.onclick = () => {
+                    const question = followUpInput.value;
+                    if (question) {
+                        // Display the user's question immediately
+                        const userQuestionDiv = document.createElement("div");
+                        userQuestionDiv.className = "user-question";
+                        userQuestionDiv.innerHTML = `<strong>Nutzer:in:</strong> <br> ${question}`;
+                        feedbacksDiv.insertBefore(userQuestionDiv, followUpContainer);
+
+                        // Show loading animation
+                        const loadingDiv = document.createElement("div");
+                        loadingDiv.className = "loading";
+                        loadingDiv.innerHTML = "<img src=\"{{ url_for('static', filename='loading.png') }}\" alt=\"Loading...\">";
+                        feedbacksDiv.insertBefore(loadingDiv, followUpContainer);
+
+                        socket.emit('follow_up_question', {
+                            question: question,
+                            thread_id: data.thread_id, // Send thread_id back to the backend
+                            assistant_id: data.assistant_id // Send assistant_id back to the backend
+                        });
+                        followUpInput.value = "";
+                        followUpContainer.style.display = "none";
+                        askButton.style.display = "none"; // Hide the ask button immediately
+                    }
+                };
+
+                followUpInput.addEventListener("keypress", (event) => {
+                    if (event.key === "Enter") {
+                        followUpButton.click();
+                    }
+                });
+
+                followUpContainer.appendChild(followUpInput);
+                followUpContainer.appendChild(followUpButton);
+
+                const askButton = document.createElement("button");
+                askButton.textContent = "Nachfragen";
+                askButton.classList.add("purple_button");
+                askButton.style.display = "block"; // Ensure the ask button is displayed as a block element
+                askButton.style.margin = "10px auto"; // Center the button horizontally
+                askButton.onclick = () => {
+                    followUpContainer.style.display = "flex"; // Ensure the follow-up container is displayed
+                    askButton.style.display = "none"; // Hide the ask button
+                };
+
+                feedbacksDiv.appendChild(followUpContainer);
+                feedbacksDiv.appendChild(askButton);
+            });
+
+            socket.on('follow_up_response', (data) => {
+                const sentenceDiv = document.querySelector(`.sentence[data-thread-id="${data.thread_id}"]`);
+                if (sentenceDiv) {
+                    const feedbacksDiv = sentenceDiv.nextElementSibling;
+                    const followUpResponseDiv = document.createElement("div");
+                    followUpResponseDiv.className = "follow-up-response";
+                    followUpResponseDiv.innerHTML = `<strong>LaWrA:</strong> <br> ${data.response}`;
+                    feedbacksDiv.insertBefore(followUpResponseDiv, feedbacksDiv.querySelector(".follow-up-container"));
+                    feedbacksDiv.querySelector(".follow-up-container").style.display = "flex"; // Show the follow-up container again
+                    feedbacksDiv.querySelector("button").style.display = "block"; // Show the ask button again
+
+                    // Remove loading animation
+                    const loadingDiv = feedbacksDiv.querySelector(".loading");
+                    if (loadingDiv) {
+                        feedbacksDiv.removeChild(loadingDiv);
+                    }
+                }
+
+                // Handle follow-up responses for overall feedback
+                const overallFeedbackDiv = document.querySelector(`.overall-feedback[data-thread-id="${data.thread_id}"]`);
+                if (overallFeedbackDiv) {
+                    const followUpResponseDiv = document.createElement("div");
+                    followUpResponseDiv.className = "follow-up-response";
+                    followUpResponseDiv.innerHTML = `<strong>LaWrA:</strong> <br> ${data.response}`;
+                    overallFeedbackDiv.insertBefore(followUpResponseDiv, overallFeedbackDiv.querySelector(".follow-up-container"));
+                    overallFeedbackDiv.querySelector(".follow-up-container").style.display = "flex"; // Show the follow-up container again
+                    overallFeedbackDiv.querySelector("button").style.display = "block"; // Show the ask button again
+
+                    // Remove loading animation
+                    const loadingDiv = overallFeedbackDiv.querySelector(".loading");
+                    if (loadingDiv) {
+                        overallFeedbackDiv.removeChild(loadingDiv);
+                    }
+                }
+            });
+
+            socket.on('overall_feedback_update', (data) => {
+                const overallFeedbackContainer = document.getElementById("overall_feedback_output");
+                const feedbackDiv = document.createElement("div");
+                feedbackDiv.className = "overall-feedback";
+                feedbackDiv.innerHTML = `<strong>${data.prompt}:</strong> <br> ${data.response}`;
+                feedbackDiv.setAttribute("data-thread-id", data.thread_id);
+
+                // Create follow-up container and button
+                const followUpContainer = document.createElement("div");
+                followUpContainer.className = "follow-up-container";
+
+                const followUpInput = document.createElement("input");
+                followUpInput.type = "text";
+                followUpInput.placeholder = "Stellen Sie eine Folgefrage";
+
+                const followUpButton = document.createElement("button");
+                followUpButton.textContent = "Senden";
+                followUpButton.classList.add("purple_button"); // Use the same class as "Nachfragen" button
+                followUpButton.onclick = () => {
+                    const question = followUpInput.value;
+                    if (question) {
+                        // Display the user's question immediately
+                        const userQuestionDiv = document.createElement("div");
+                        userQuestionDiv.className = "user-question";
+                        userQuestionDiv.innerHTML = `<strong>Nutzer:in:</strong> <br> ${question}`;
+                        feedbackDiv.insertBefore(userQuestionDiv, followUpContainer);
+
+                        // Show loading animation
+                        const loadingDiv = document.createElement("div");
+                        loadingDiv.className = "loading";
+                        loadingDiv.innerHTML = "<img src=\"{{ url_for('static', filename='loading.png') }}\" alt=\"Loading...\">";
+                        feedbackDiv.insertBefore(loadingDiv, followUpContainer);
+
+                        socket.emit('follow_up_question', {
+                            question: question,
+                            thread_id: data.thread_id, // Send thread_id back to the backend
+                            assistant_id: data.assistant_id // Send assistant_id back to the backend
+                        });
+                        followUpInput.value = "";
+                        followUpContainer.style.display = "none";
+                        askButton.style.display = "none"; // Hide the ask button immediately
+                    }
+                };
+
+                followUpInput.addEventListener("keypress", (event) => {
+                    if (event.key === "Enter") {
+                        followUpButton.click();
+                    }
+                });
+
+                followUpContainer.appendChild(followUpInput);
+                followUpContainer.appendChild(followUpButton);
+
+                const askButton = document.createElement("button");
+                askButton.textContent = "Nachfragen";
+                askButton.classList.add("purple_button");
+                askButton.style.display = "block"; // Ensure the ask button is displayed as a block element
+                askButton.style.margin = "10px auto"; // Center the button horizontally
+                askButton.onclick = () => {
+                    followUpContainer.style.display = "flex"; // Ensure the follow-up container is displayed
+                    askButton.style.display = "none"; // Hide the ask button
+                };
+
+                feedbackDiv.appendChild(followUpContainer);
+                feedbackDiv.appendChild(document.createElement("br")); // Add a line break before the button
+                feedbackDiv.appendChild(askButton);
+
+                overallFeedbackContainer.appendChild(feedbackDiv);
+            });
+
+            // Show the loading symbol
+            loadingElement.style.display = "block";
+
+            // Fetch case titles and populate the dropdown
+            fetch("/get-case-titles")
+                .then(response => response.json())
+                .then(data => {
+                    data.case_titles.forEach(title => {
+                        const option = document.createElement("option");
+                        option.value = title;
+                        option.textContent = title;
+                        caseDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching case titles:', error);
+                })
+                .finally(() => {
+                    // Hide the loading symbol
+                    loadingElement.style.display = "none";
+                });
+
+            // Add event listener to load case description when a case is selected
+            caseDropdown.addEventListener("change", () => {
+                const selectedCase = caseDropdown.value;
+                document.getElementById("selected_case").value = selectedCase;
+                
+                // Show the loading symbol
+                loadingElement.style.display = "block";
+
+                fetch(`/get-case-description?title=${encodeURIComponent(selectedCase)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        caseDescription.value = data.description;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching case description:', error);
+                    })
+                    .finally(() => {
+                        // Hide the loading symbol
+                        loadingElement.style.display = "none";
+                    });
+            });
+        });
+
+        async function generateFeedback() {
+            const studentInput = document.getElementById("student_input").value;
+            const selectedCase = document.getElementById("selected_case").value;
+            const loadingElement = document.getElementById("loading");
+
+            // Clear previous feedback
+            const feedbackContainer = document.getElementById("feedback_output");
+            feedbackContainer.innerHTML = "";
+
+            const overallFeedbackContainer = document.getElementById("overall_feedback_output");
+            overallFeedbackContainer.innerHTML = "";
+
+            // Show the loading symbol
+            loadingElement.style.display = "block";
+
+            const response = await fetch("/generate-feedback", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `student_input=${encodeURIComponent(studentInput)}&selected_case=${encodeURIComponent(selectedCase)}`
+            });
+
+            // Hide the loading symbol
+            loadingElement.style.display = "none";
+
+            if (!response.ok) {
+                alert("Error: Unable to generate feedback.");
+                return;
+            }
+
+            const result = await response.json();
+
+            // Display overall feedback
+            if (result.text_feedback && result.text_feedback.length > 0) {
+                const overallFeedbackContainer = document.getElementById("overall_feedback_output");
+                overallFeedbackContainer.innerHTML = "";  // Clear previous overall feedback
+
+                result.text_feedback.forEach(feedbackItem => {
+                    feedbackItem.responses.forEach(response => {
+                        const feedbackDiv = document.createElement("div");
+                        feedbackDiv.className = "overall-feedback";
+                        feedbackDiv.innerHTML = `<strong>${feedbackItem.prompt}:</strong> <br> ${response}`;
+                        overallFeedbackContainer.appendChild(feedbackDiv);
+
+                        // Create follow-up container and button
+                        const followUpContainer = document.createElement("div");
+                        followUpContainer.className = "follow-up-container";
+
+                        const followUpInput = document.createElement("input");
+                        followUpInput.type = "text";
+                        followUpInput.placeholder = "Stellen Sie eine Folgefrage";
+
+                        const followUpButton = document.createElement("button");
+                        followUpButton.textContent = "Senden";
+                        followUpButton.classList.add("purple_button"); // Use the same class as "Nachfragen" button
+                        followUpButton.onclick = () => {
+                            const question = followUpInput.value;
+                            if (question) {
+                                // Display the user's question immediately
+                                const userQuestionDiv = document.createElement("div");
+                                userQuestionDiv.className = "user-question";
+                                userQuestionDiv.innerHTML = `<strong>Nutzer:in:</strong> <br> ${question}`;
+                                feedbackDiv.insertBefore(userQuestionDiv, followUpContainer);
+
+                                // Show loading animation
+                                const loadingDiv = document.createElement("div");
+                                loadingDiv.className = "loading";
+                                loadingDiv.innerHTML = "<img src=\"{{ url_for('static', filename='loading.png') }}\" alt=\"Loading...\">";
+                                feedbackDiv.insertBefore(loadingDiv, followUpContainer);
+
+                                socket.emit('follow_up_question', {
+                                    question: question,
+                                    thread_id: feedbackItem.thread_id, // Send thread_id back to the backend
+                                    assistant_id: feedbackItem.assistant_id // Send assistant_id back to the backend
+                                });
+                                followUpInput.value = "";
+                                followUpContainer.style.display = "none";
+                                askButton.style.display = "none"; // Hide the ask button immediately
+                            }
+                        };
+
+                        followUpInput.addEventListener("keypress", (event) => {
+                            if (event.key === "Enter") {
+                                followUpButton.click();
+                            }
+                        });
+
+                        followUpContainer.appendChild(followUpInput);
+                        followUpContainer.appendChild(followUpButton);
+
+                        const askButton = document.createElement("button");
+                        askButton.textContent = "Nachfragen";
+                        askButton.classList.add("purple_button");
+                        askButton.style.display = "block"; // Ensure the ask button is displayed as a block element
+                        askButton.style.margin = "10px auto"; // Center the button horizontally
+                        askButton.onclick = () => {
+                            followUpContainer.style.display = "flex"; // Ensure the follow-up container is displayed
+                            askButton.style.display = "none"; // Hide the ask button
+                        };
+
+                        feedbackDiv.appendChild(followUpContainer);
+                        feedbackDiv.appendChild(askButton);
+                    });
+                });
+            }
+
+            // Check for individual feedback (if needed)
+            //if (!result.sentence_feedback || result.sentence_feedback.length === 0) {
+            //    alert("No feedback generated. Please check your input or feedback data.");
+            //    return;
+            //}
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <h1>LaWrA: Legal Writing Assistant</h1>
+    </div>
+    <div class="container">
+        <!-- Case Selection Dropdown -->
+        <div class="fields-container">
+            <div class="text-section">
+            <label for="case_dropdown"><strong>Wähle einen Fall:</strong></label>
+            <select id="case_dropdown" style="font-size: 16px;">
+                <option value="" disabled selected>Select a case</option>
+            </select>
+            </div>
+        </div>
+        <input type="hidden" id="selected_case" name="selected_case">
+
+        <!-- Input Fields -->
+        <div class="fields-container">
+            <!-- Case Description -->
+            <div class="text-section">
+                <label for="case_description"><strong>Fallbeschreibung:</strong></label>
+                <textarea id="case_description" rows="30" style="font-size: 16px;"></textarea>
+                </textarea>
+            </div>
+
+            <!-- Student's Input -->
+            <div class="text-section">
+                <label for="student_input"><strong>Deine Lösung:</strong></label>
+                <textarea id="student_input" rows="30" style="font-size: 16px;">
+                    
+                </textarea>
+            </div>
+        </div>
+
+        <!-- Overall Feedback Output -->
+        <div class="fields-container">
+            <div class="feedback-section">
+                <h3>Feedback:</h3>
+                <div id="overall_feedback_output" class="overall-feedback-container"></div>
+            </div>
+        </div>
+
+        <!-- Feedback Output -->
+        <div class="fields-container">
+            <div class="feedback-section">
+                <h3>Feedback zu einzelnen Sätzen:</h3>
+                <div id="feedback_output" class="sentence-feedback-container"></div>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button class="purple_button" onclick="generateFeedback()">Feedback Generieren</button>
+        <div id="loading">
+            <img src="{{ url_for('static', filename='loading.png') }}" alt="Loading...">
+        </div>
+    </div>
+</body>
+</html>

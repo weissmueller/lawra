@@ -1,0 +1,7 @@
+Flask
+flask-socketio
+fastapi
+pydantic
+requests
+openai
+urllib3
